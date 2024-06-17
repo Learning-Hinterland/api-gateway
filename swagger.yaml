@@ -9,7 +9,7 @@ servers:
 security:
   - bearerAuth: []
 paths:
-  /auth/login: # OK
+  /auth/login:
     post:
       description: |
         Login Test User:
@@ -48,7 +48,7 @@ paths:
                     properties:
                       data:
                         type: object
-  /auth/me: # OK
+  /auth/me:
     get:
       tags:
         - "Auth"
@@ -66,7 +66,7 @@ paths:
                     properties:
                       data:
                         type: object
-  /users: # OK
+  /users:
     get:
       tags:
         - "User"
@@ -131,10 +131,454 @@ paths:
                     properties:
                       data:
                         type: object
-  /users/{id}: # OK
+  /users/{id}:
     get:
       tags:
         - "User"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /courses:
+    post:
+      tags:
+        - "Course"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: PBL
+                description:
+                  type: string
+                  example: Problem Based Learning
+                cover_url:
+                  type: string
+                  example: https://example.com/image.jpg
+              required:
+                - name
+                - description
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    get:
+      tags:
+        - "Course"
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: search
+          required: false
+        - schema:
+            type: integer
+          in: query
+          name: lecturer_id
+          required: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /courses/{id}:
+    get:
+      tags:
+        - "Course"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    put:
+      tags:
+        - "Course"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: PBL
+                description:
+                  type: string
+                  example: Problem Based Learning
+                cover_url:
+                  type: string
+                  example: https://example.com/image.jpg
+              required:
+                - name
+                - description
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    delete:
+      tags:
+        - "Course"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /materials:
+    post:
+      tags:
+        - "Lesson"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_id:
+                  type: integer
+                  example: 1
+                title:
+                  type: string
+                  example: Introduction
+                description:
+                  type: string
+                  example: Introduction to PBL
+              required:
+                - course_id
+                - title
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    get:
+      tags:
+        - "Lesson"
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: course_id
+          required: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /materials/{id}:
+    get:
+      tags:
+        - "Lesson"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    put:
+      tags:
+        - "Lesson"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Introduction
+                description:
+                  type: string
+                  example: Introduction to PBL
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    delete:
+      tags:
+        - "Lesson"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /contents:
+    post:
+      tags:
+        - "Content"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                material_id:
+                  type: integer
+                  example: 1
+                title:
+                  type: string
+                  example: Introduction
+                body:
+                  type: string
+                  example: <p>Introduction to PBL</p>
+                video_url:
+                  type: string
+                  example: https://example.com/video.mp4
+              required:
+                - material_id
+                - title
+                - content
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    get:
+      tags:
+        - "Content"
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: material_id
+          required: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /contents/{id}:
+    get:
+      tags:
+        - "Content"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    put:
+      tags:
+        - "Content"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Introduction
+                body:
+                  type: string
+                  example: <p>Introduction to PBL</p>
+                video_url:
+                  type: string
+                  example: https://example.com/video.mp4
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    delete:
+      tags:
+        - "Content"
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
@@ -170,7 +614,6 @@ components:
       properties:
         status:
           type: boolean
-          example: false
         message:
           type: string
         error:
