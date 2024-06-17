@@ -1,16 +1,16 @@
 const {
-    JTW_SECRET
+    JWT_SECRET
 } = process.env;
 const jwt = require('jsonwebtoken');
 
-const authMiddleware = (req, res, next) => {
+async function restrict(req, res, next) {
     const token = req.headers.authorization;
-    if (!token) {
+    if (!token || !token.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'No token provided' });
     }
 
     try {
-        const decoded = jwt.verify(token, JTW_SECRET);
+        const decoded = jwt.verify(token.slice(7), JWT_SECRET);
         req.user = decoded;
         next();
     } catch (error) {
@@ -18,4 +18,18 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware;
+async function isAdmin(req, res, next) {
+    if (req.user.role !== 'ROLE_ADMIN') {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
+    next();
+}
+
+async function isLecturer(req, res, next) {
+    if (req.user.role !== 'ROLE_LECTURER') {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
+    next();
+}
+
+module.exports = { restrict, isAdmin, isLecturer };
