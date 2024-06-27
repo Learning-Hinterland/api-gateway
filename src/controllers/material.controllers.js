@@ -4,6 +4,7 @@ const {
 
 const axios = require('../libs/axios');
 const api = axios(COURSE_SERVICE_URL);
+let { getUsersMap } = require('../utils/users');
 
 async function createMaterial(req, res, next) {
     try {
@@ -19,8 +20,12 @@ async function createMaterial(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -40,15 +45,33 @@ async function getMaterials(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
 // endpoint get content by id
 async function getMaterialById(req, res, next) {
     try {
-        let { status, data } = await api.get(`/api/materials/${req.params.id}`);
+        let { status, data } = await api.get(`/api/materials/${req.params.id}`, { params: { user_id: req.user.id } });
+
+        let usersMap = await getUsersMap();
+
+        data.data.contents.forEach(content => {
+            content.comments = content.comments.filter(comment => {
+                let userExist = usersMap.get(comment.user.id);
+                if (userExist) {
+                    comment.user.name = userExist.name;
+                    return true;
+                }
+                return false;
+            });
+        });
+
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
@@ -60,8 +83,12 @@ async function getMaterialById(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -80,8 +107,12 @@ async function updateMaterial(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -100,8 +131,12 @@ async function deleteMaterial(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 

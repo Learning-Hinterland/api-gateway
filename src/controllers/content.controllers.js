@@ -3,7 +3,6 @@ const {
 } = process.env;
 
 const axios = require('../libs/axios');
-const { param } = require('../routes');
 const api = axios(COURSE_SERVICE_URL);
 
 async function createContent(req, res, next) {
@@ -20,8 +19,12 @@ async function createContent(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -41,15 +44,19 @@ async function getContents(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
 // endpoint get content by id
 async function getContentById(req, res, next) {
     try {
-        let { status, data } = await api.get(`/api/contents/${req.params.id}`);
+        let { status, data } = await api.get(`/api/contents/${req.params.id}`, { params: { user_id: req.user.id } });
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
@@ -61,8 +68,12 @@ async function getContentById(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -81,8 +92,12 @@ async function updateContent(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -101,8 +116,12 @@ async function deleteContent(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -120,8 +139,12 @@ async function markContentWatched(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -139,8 +162,12 @@ async function likeContent(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -158,8 +185,12 @@ async function unlikeContent(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -177,8 +208,12 @@ async function commentContent(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 

@@ -64,8 +64,12 @@ async function login(req, res, next) {
             });
         }
 
-        const { status, data } = error.response;
-        return res.status(status).json(data);
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
     }
 }
 
