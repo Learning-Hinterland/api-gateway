@@ -3,6 +3,7 @@ const {
 } = process.env;
 
 const axios = require('../libs/axios');
+const { param } = require('../routes');
 const api = axios(COURSE_SERVICE_URL);
 
 async function createContent(req, res, next) {
@@ -107,7 +108,7 @@ async function deleteContent(req, res, next) {
 
 async function markContentWatched(req, res, next) {
     try {
-        let { status, data } = await api.post(`/api/contents/${req.params.id}/watch`, req.body);
+        let { status, data } = await api.post(`/api/contents/${req.params.id}/watch`, {}, { params: { user_id: req.user.id } });
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
@@ -126,7 +127,7 @@ async function markContentWatched(req, res, next) {
 
 async function likeContent(req, res, next) {
     try {
-        let { status, data } = await api.post(`/api/contents/${req.params.id}/like`, req.body);
+        let { status, data } = await api.post(`/api/contents/${req.params.id}/like`, {}, { params: { user_id: req.user.id } });
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
@@ -145,7 +146,7 @@ async function likeContent(req, res, next) {
 
 async function unlikeContent(req, res, next) {
     try {
-        let { status, data } = await api.post(`/api/contents/${req.params.id}/unlike`, req.body);
+        let { status, data } = await api.delete(`/api/contents/${req.params.id}/unlike`, { params: { user_id: req.user.id } });
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
@@ -164,7 +165,7 @@ async function unlikeContent(req, res, next) {
 
 async function commentContent(req, res, next) {
     try {
-        let { status, data } = await api.post(`/api/contents/${req.params.id}/comment`, req.body);
+        let { status, data } = await api.post(`/api/contents/${req.params.id}/comment`, req.body, { params: { user_id: req.user.id } });
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
