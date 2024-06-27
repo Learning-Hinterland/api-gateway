@@ -105,4 +105,80 @@ async function deleteContent(req, res, next) {
     }
 }
 
-module.exports = { createContent, getContents, getContentById, updateContent, deleteContent };
+async function markContentWatched(req, res, next) {
+    try {
+        let { status, data } = await api.post(`/api/contents/${req.params.id}/watch`, req.body);
+        return res.status(status).json(data);
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        const { status, data } = error.response;
+        return res.status(status).json(data);
+    }
+}
+
+async function likeContent(req, res, next) {
+    try {
+        let { status, data } = await api.post(`/api/contents/${req.params.id}/like`, req.body);
+        return res.status(status).json(data);
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        const { status, data } = error.response;
+        return res.status(status).json(data);
+    }
+}
+
+async function unlikeContent(req, res, next) {
+    try {
+        let { status, data } = await api.post(`/api/contents/${req.params.id}/unlike`, req.body);
+        return res.status(status).json(data);
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        const { status, data } = error.response;
+        return res.status(status).json(data);
+    }
+}
+
+async function commentContent(req, res, next) {
+    try {
+        let { status, data } = await api.post(`/api/contents/${req.params.id}/comment`, req.body);
+        return res.status(status).json(data);
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        const { status, data } = error.response;
+        return res.status(status).json(data);
+    }
+}
+
+module.exports = { createContent, getContents, getContentById, updateContent, deleteContent, markContentWatched, likeContent, unlikeContent, commentContent };
