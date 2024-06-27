@@ -205,6 +205,12 @@ paths:
           in: query
           name: lecturer_id
           required: false
+        - schema:
+            type: string
+          in: query
+          name: is_enrolled
+          required: false
+          description: true, false
       responses:
         200:
           description: OK

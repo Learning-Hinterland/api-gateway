@@ -28,7 +28,7 @@ async function createCourse(req, res, next) {
 async function getCourses(req, res, next) {
     try {
         const query = req.query;
-        let { status, data } = await api.get('/api/courses', { params: query });
+        let { status, data } = await api.get('/api/courses', { params: { ...query, user_id: req.user.id } });
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
@@ -48,7 +48,7 @@ async function getCourses(req, res, next) {
 // endpoint get content by id
 async function getCourseById(req, res, next) {
     try {
-        let { status, data } = await api.get(`/api/courses/${req.params.id}`);
+        let { status, data } = await api.get(`/api/courses/${req.params.id}`, { params: { user_id: req.user.id } });
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
