@@ -9,4 +9,7 @@ router.get('/:id', restrict, courseController.getCourseById);
 router.put('/:id', restrict, isLecturer, courseController.updateCourse);
 router.delete('/:id', restrict, isLecturer, courseController.deleteCourse);
 
+router.post('/:id/enroll', restrict, courseController.enrollCourse);
+router.delete('/:id/unenroll', restrict, courseController.unenrollCourse);
+
 module.exports = router;

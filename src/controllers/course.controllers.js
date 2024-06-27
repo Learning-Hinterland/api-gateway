@@ -105,4 +105,44 @@ async function deleteCourse(req, res, next) {
     }
 }
 
-module.exports = { createCourse, getCourses, getCourseById, updateCourse, deleteCourse };
+async function enrollCourse(req, res, next) {
+    try {
+        console.log("req.params.id", req.params.id);
+        let { status, data } = await api.post(`/api/courses/${req.params.id}/enroll`, {}, { params: { user_id: req.user.id } });
+        return res.status(status).json(data);
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        console.log("error.response", error);
+        const { status, data } = error.response;
+        return res.status(status).json(data);
+    }
+}
+
+async function unenrollCourse(req, res, next) {
+    try {
+        let { status, data } = await api.delete(`/api/courses/${req.params.id}/unenroll`, { params: { user_id: req.user.id } });
+        return res.status(status).json(data);
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        const { status, data } = error.response;
+        return res.status(status).json(data);
+    }
+}
+
+module.exports = { createCourse, getCourses, getCourseById, updateCourse, deleteCourse, enrollCourse, unenrollCourse };
