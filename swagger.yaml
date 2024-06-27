@@ -368,7 +368,7 @@ paths:
   /materials:
     post:
       tags:
-        - "Lesson"
+        - "Material"
       security:
         - bearerAuth: []
       requestBody:
@@ -404,7 +404,7 @@ paths:
                         type: object
     get:
       tags:
-        - "Lesson"
+        - "Material"
       parameters:
         - schema:
             type: integer
@@ -426,7 +426,7 @@ paths:
   /materials/{id}:
     get:
       tags:
-        - "Lesson"
+        - "Material"
       parameters:
         - in: path
           name: id
@@ -448,7 +448,7 @@ paths:
                         type: object
     put:
       tags:
-        - "Lesson"
+        - "Material"
       security:
         - bearerAuth: []
       parameters:
@@ -485,7 +485,7 @@ paths:
                         type: object
     delete:
       tags:
-        - "Lesson"
+        - "Material"
       security:
         - bearerAuth: []
       parameters:
@@ -495,6 +495,140 @@ paths:
           schema:
             type: integer
             minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /assignments:
+    post:
+      tags:
+        - "Assignment"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                material_id:
+                  type: integer
+                  example: 1
+                content:
+                  type: string
+                  example: Introduction to PBL
+                deadline:
+                  type: string
+                  format: date-time
+                  example: 2022-12-31T23:59:59
+              required:
+                - material_id
+                - title
+                - description
+                - due_date
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+    get:
+      tags:
+        - "Assignment"
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: course_id
+          required: false
+        - schema:
+            type: integer
+          in: query
+          name: user_id
+          required: false
+        - schema:
+            type: integer
+          in: query
+          name: lecturer_id
+          required: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /assignments/{id}:
+    get:
+      tags:
+        - "Assignment"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+  /assignments/{id}/submit:
+    post:
+      tags:
+        - "Assignment"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The assignment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  example: https://example.com/file.pdf
+                  format: uri
+                description:
+                  type: string
+                  example: My assignment
       responses:
         200:
           description: OK
