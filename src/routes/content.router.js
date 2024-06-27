@@ -8,4 +8,9 @@ router.get('/:id', restrict, createContent.getContentById);
 router.put('/:id', restrict, isLecturer, createContent.updateContent);
 router.delete('/:id', restrict, isLecturer, createContent.deleteContent);
 
+router.post('/:id/watch', restrict, createContent.markContentWatched);
+router.post('/:id/like', restrict, createContent.likeContent);
+router.delete('/:id/unlike', restrict, createContent.unlikeContent);
+router.post('/:id/comment', restrict, createContent.commentContent);
+
 module.exports = router;
