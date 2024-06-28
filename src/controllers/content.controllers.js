@@ -4,6 +4,7 @@ const {
 
 const axios = require('../libs/axios');
 const api = axios(COURSE_SERVICE_URL);
+let { getUsersMap } = require('../utils/users');
 
 async function createContent(req, res, next) {
     try {
@@ -57,6 +58,18 @@ async function getContents(req, res, next) {
 async function getContentById(req, res, next) {
     try {
         let { status, data } = await api.get(`/api/contents/${req.params.id}`, { params: { user_id: req.user.id } });
+
+        let usersMap = await getUsersMap();
+
+        data.data.comments.forEach(comment => {
+            let userExist = usersMap.get(comment.user.id);
+            if (userExist) {
+                comment.user.name = userExist.name;
+                return true;
+            }
+            return false;
+        });
+
         return res.status(status).json(data);
     } catch (error) {
         if (error.code === 'ECONNREFUSED') {
