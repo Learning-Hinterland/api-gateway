@@ -5,6 +5,7 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const fs = require("fs");
 const YAML = require('yaml');
+const path = require('path');
 
 const file = fs.readFileSync('./swagger.yaml', 'utf8');
 const swaggerDocument = YAML.parse(file);
@@ -13,7 +14,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '/views'));
 
 const router = require('./routes');
 app.use('/api', router);

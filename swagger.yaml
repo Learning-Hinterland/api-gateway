@@ -66,6 +66,32 @@ paths:
                     properties:
                       data:
                         type: object
+  /auth/forgot-password:
+    post:
+      tags:
+        - "Auth"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
   /users:
     get:
       tags:

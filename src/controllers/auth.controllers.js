@@ -1,10 +1,12 @@
 const {
     USER_SERVICE_URL,
     JWT_SECRET,
+    FRONT_END_URL
 } = process.env;
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+let sendMail = require('../libs/nodemailer');
 const axios = require('../libs/axios');
 const api = axios(USER_SERVICE_URL);
 
@@ -82,4 +84,90 @@ async function me(req, res, next) {
     });
 }
 
-module.exports = { login, me };
+async function forgotPassword(req, res, next) {
+    try {
+        let { email } = req.body;
+        let { data } = await api.get(`/api/users?email=${email}`);
+        // if data exist, send email
+        if (data.data[0]) {
+            let user = data.data[0];
+            let token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
+
+            // send email
+            let url = `${req.protocol}://${req.get('host')}/api/auth/reset-password?token=${token}`;
+            sendMail(user.name, user.email, url);
+        }
+
+        return res.json({
+            status: true,
+            message: 'We will send you an email if the email is registered',
+            error: null,
+            data: null
+        });
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
+    }
+}
+
+async function resetPassword(req, res, next) {
+    try {
+        let { token } = req.query;
+        let { password, confirm_password } = req.body;
+        if (password != confirm_password) {
+            return res.redirect(`/api/auth/reset-password?token=${token}&error=${encodeURIComponent('password not match')}`);
+        }
+
+        let decoded = jwt.verify(token, JWT_SECRET);
+        if (!decoded) {
+            return res.redirect(`/api/auth/reset-password?token=${token}&error=${encodeURIComponent('invalid token')}`);
+        }
+
+        let { data } = await api.get(`/api/users/${decoded.id}`);
+        if (!data.data) {
+            return res.redirect(`/api/auth/reset-password?token=${token}&error=${encodeURIComponent('user not found')}`);
+        }
+
+        let user = data.data;
+        let hashedPassword = await bcrypt.hash(password, 10);
+        await api.put(`/api/users/${user.id}`, {
+            ...user,
+            password: hashedPassword
+        });
+
+        let loginUrl = `${FRONT_END_URL}/login`;
+        console.log("loginUrl", loginUrl);
+        res.render('reset-password-success', { login_url: loginUrl });
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
+    }
+}
+
+module.exports = { login, me, forgotPassword, resetPassword };
