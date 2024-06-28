@@ -10,5 +10,6 @@ router.get('/reset-password', (req, res) => {
     return res.render('reset-password', { token, error });
 });
 router.post('/reset-password', authController.resetPassword);
+router.post('/update-password', restrict, authController.updatePassword);
 
 module.exports = router;

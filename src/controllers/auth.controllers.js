@@ -142,10 +142,9 @@ async function resetPassword(req, res, next) {
         }
 
         let user = data.data;
-        let hashedPassword = await bcrypt.hash(password, 10);
         await api.put(`/api/users/${user.id}`, {
             ...user,
-            password: hashedPassword
+            password
         });
 
         let loginUrl = `${FRONT_END_URL}/login`;
@@ -170,4 +169,80 @@ async function resetPassword(req, res, next) {
     }
 }
 
-module.exports = { login, me, forgotPassword, resetPassword };
+async function updatePassword(req, res, next) {
+    try {
+        const { user_id, old_password, new_password } = req.body;
+
+        let { data } = await api.get(`/api/users/${user_id}`);
+        if (!data.data) {
+            return res.status(400).json({
+                status: false,
+                message: 'user not found',
+                error: null,
+                data: null
+            });
+        }
+
+        let user = data.data;
+        if (user.id !== req.user.id && req.user.role !== 'ROLE_ADMIN') {
+            return res.status(403).json({
+                status: false,
+                message: 'forbidden access',
+                error: null,
+                data: null
+            });
+        }
+
+        if (user.id == req.user.id) {
+            if (old_password == new_password) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'old password and new password must be different',
+                    error: null,
+                    data: null
+                });
+            }
+
+            let isPasswordMatch = await bcrypt.compare(old_password, user.password);
+            if (!isPasswordMatch) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'invalid old password',
+                    error: null,
+                    data: null
+                });
+            }
+        }
+        
+
+        await api.put(`/api/users/${user.id}`, {
+            ...user,
+            password: new_password
+        });
+
+        return res.json({
+            status: true,
+            message: 'Successfully updated password',
+            error: null,
+            data: null
+        });
+    } catch (error) {
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(500).json({
+                status: false,
+                message: 'service unavailable',
+                error: null,
+                data: null
+            });
+        }
+
+        if (error.response) {
+            const { status, data } = error.response;
+            return res.status(status).json(data);
+        } else {
+            next(error);
+        }
+    }
+}
+
+module.exports = { login, me, forgotPassword, resetPassword, updatePassword };
